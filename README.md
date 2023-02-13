@@ -1,2 +1,4 @@
 # Stochastic population dynamics
-For FRTN45 - Advanced course in mathematical modelling 
+This repo contains simulation scripts for modelling the spread of the 
+covid variants omicron and delta in society, modelled as a Markov jump 
+process.
