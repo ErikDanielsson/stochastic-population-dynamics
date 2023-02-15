@@ -64,7 +64,7 @@ end
 
 """
 This is the main simulation step: calculating transition probabilities and
-sampling the distributions. The next time is sampled from an
+sampling the distributions. 
 """
 function nextevent(X::State, popsize::Int64, optmodel::OptModel)
     # Compute the event probabilities for the current state

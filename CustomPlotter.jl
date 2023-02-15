@@ -66,22 +66,6 @@ function bandplot(sims::Vector, nsamples, nstates, labels)
     )
 end
 
-function uniformsample(sim::Vector{Simulation{Int64}}, nsamples, tf)
-    nstates = length(sim.states[:, 1])
-    tgrid = zeros(nsamples)
-    states = zeros(nstates, nsamples)
-    tdist = tf / (nsamples - 1)
-    tgrid[1] = 0
-    states[:, 1] = sim.states[:, 1]
-    i = 1
-    for j in 2:nsamples
-        while sim.t[i+1] < t
-            i += 1
-        end
-    end
-
-end
-
 function uniformsample(sims::Vector{Simulation{Int64}}, nsamples)
     nsims = length(sims)
     nstates = length(sims[1].states[:, 1])

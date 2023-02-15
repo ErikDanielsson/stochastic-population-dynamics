@@ -30,7 +30,7 @@ Name    Type        Result              Probability/time
 =#
 include("FellerKendall.jl")
 include("CustomPlotter.jl")
-include("params.jl")
+using LaTeXStrings
 
 
 # Define the events by building a graph
@@ -144,7 +144,7 @@ function prunsim(N, I1, I2, tf, nsims::Int)
 end
 
 # Define the plotting functions for the problem instance
-const labels = ["S" "D" "I1" "I2" "M1" "M2" "Q1" "Q2"]
+const labels = [L"S" L"D" L"I_1" L"I_2" L"M_1" L"M_2" L"Q_1" L"Q_2"]
 bandplot(sims::Vector, nsamples) = bandplot(sims, nsamples, nstates, labels)
 plotter(sim::Simulation, inc) = plotter(sim, inc, nstates, labels)
 plotter!(sim::Simulation, inc) = plotter!(sim, inc, nstates, labels)
