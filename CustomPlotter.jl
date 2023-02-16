@@ -66,39 +66,47 @@ function bandplot(sims::Vector, nsamples, nstates, labels)
     )
 end
 
+function uniformsample(sim::Simulation{Int64}, tdist, nsamples, nstates)
+    tgrid = zeros(nsamples)
+    sampstates = zeros(nstates, nsamples)
+    tgrid[1] = 0
+    simstates = load_sim_states(sim)
+    t = tdist
+    j = 1
+    for i = 2:nsamples
+        while sim.t[j+1] < t
+            j += 1
+            if sim.l == j
+                break
+            end
+        end
+        tgrid[i] = sim.t[j]
+        if sim.l == j
+            sampstates[:, i:end] .= simstates[:, j]
+            break
+        else
+            sampstates[:, i] = simstates[:, j]
+        end
+        t += tdist
+    end
+    return tgrid, sampstates
+end
+
 function uniformsample(sims::Vector{Simulation{Int64}}, nsamples)
     nsims = length(sims)
-    nstates = length(sims[1].states[:, 1])
+    nstates = sims[1].nstates
     tgrid = zeros(nsamples)
     states = zeros(nsims, nstates, nsamples)
     tmax = maximum([sim.t[end] for sim in sims])
     tdist = tmax / (nsamples - 1)
-    tgrid[1] = 0
-    for i in eachindex(sims)
-        states[i, :, 1] = sims[i].states[:, 1]
-    end
-    ind = convert.(Int64, ones(nsims))
-    simsinds = Vector(eachindex(sims))
-    t = tdist
-    for i = 2:nsamples
-        maxt = typemin(Float64)
-        for j in simsinds
-            while sims[j].t[ind[j]+1] < t
-                ind[j] += 1
-                if sims[j].l == ind[j]
-                    popat!(simsinds, findfirst((n) -> n == j, simsinds))
-                    break
-                end
-            end
-            if sims[j].t[ind[j]] > maxt
-                maxt = sims[j].t[ind[j]]
-            end
-        end
-        tgrid[i] = maxt
-        for j in eachindex(sims)
-            states[j, :, i] = sims[j].states[:, ind[j]]
-        end
-        t += tdist
+    for i in 1:nsims
+        sampgrid, sampstates = uniformsample(sims[i], tdist, nsamples, nstates)
+        states[i, :, :] = sampstates
+        println("a ", tgrid)
+        println("b ", sampgrid)
+        tgrid = max.(tgrid, sampgrid)
+        println("c ", tgrid)
     end
     return tgrid, states
 end
+

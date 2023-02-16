@@ -4,7 +4,7 @@ The Feller-Kendall algorithm for a Markov jump processes
 Author: Erik Danielsson
 
 =#
-using Distributions, StaticArrays
+using Distributions, StaticArrays, DelimitedFiles, CSV, Tables
 
 struct Model
     nstates::Int64
@@ -47,7 +47,8 @@ State{N} = SVector{N,Int64}
 struct Simulation{T}
     l::Int64
     t::Vector{Float64}
-    states::Matrix{T}
+    nstates::Int64
+    states::String
     popsize::T
 end
 
@@ -58,8 +59,20 @@ function Simulation{Int64}(tgrid::Vector{Float64},
     states = reduce(hcat, states) # Matrix conversion
     deaths = popsize .- sum(states, dims=1) # Calculate death count
 
+    fn = tempname()
     mstates = [states[1, :]'; deaths; states[2:end, :]]# vcat(states, deaths)
-    Simulation(length(tgrid), tgrid, mstates, popsize)
+    states_length = length(mstates[:, 1])
+    writedlm(fn, mstates)
+    Simulation(length(tgrid), tgrid, states_length, fn, popsize)
+end
+
+function load_sim_states(sim::Simulation)
+    return readdlm(sim.states)
+end
+
+function load_sim_state(sim::Simulation, index::Int64)
+    return CSV.read(sim.states, Tables.matrix, header=false, select=[index])
+
 end
 
 """
