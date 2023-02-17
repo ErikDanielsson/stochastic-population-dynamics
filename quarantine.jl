@@ -137,7 +137,7 @@ getX0(N, I1, I2) = State{nstates}([N - I1 - I2, I1, I2, 0, 0, 0, 0])
 function prunsim(N, I1, I2, tf, nsims::Int)
     # Convenience function for running the simulation on several threads
     sims = Vector{Simulation{Int64}}(undef, nsims)
-    Threads.@threads for i in 1:nsims
+    Threads.@threads for i in ProgressBar(1:nsims)
         sims[i] = simulation(getX0(N, I1, I2), model, tf)
     end
     return sims

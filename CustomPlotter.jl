@@ -1,4 +1,4 @@
-using Distributions, Plots
+using Distributions, Plots, ProgressBars
 
 function baseplotter(plotfunc, sim::Simulation, inc::Int, nstates, labels)
     plotfunc(sim.t[1:inc:end],
@@ -71,6 +71,7 @@ function uniformsample(sim::Simulation{Int64}, tdist, nsamples, nstates)
     sampstates = zeros(nstates, nsamples)
     tgrid[1] = 0
     simstates = load_sim_states(sim)
+    sampstates[:, 1] = simstates[:, 1]
     t = tdist
     j = 1
     for i = 2:nsamples
@@ -80,7 +81,7 @@ function uniformsample(sim::Simulation{Int64}, tdist, nsamples, nstates)
                 break
             end
         end
-        tgrid[i] = sim.t[j]
+        tgrid[i] = t
         if sim.l == j
             sampstates[:, i:end] .= simstates[:, j]
             break
@@ -95,17 +96,13 @@ end
 function uniformsample(sims::Vector{Simulation{Int64}}, nsamples)
     nsims = length(sims)
     nstates = sims[1].nstates
-    tgrid = zeros(nsamples)
-    states = zeros(nsims, nstates, nsamples)
     tmax = maximum([sim.t[end] for sim in sims])
     tdist = tmax / (nsamples - 1)
-    for i in 1:nsims
+    tgrid = [tdist * i for i in 0:(nsamples-1)]
+    states = zeros(nsims, nstates, nsamples)
+    for i in ProgressBar(1:nsims)
         sampgrid, sampstates = uniformsample(sims[i], tdist, nsamples, nstates)
         states[i, :, :] = sampstates
-        println("a ", tgrid)
-        println("b ", sampgrid)
-        tgrid = max.(tgrid, sampgrid)
-        println("c ", tgrid)
     end
     return tgrid, states
 end
