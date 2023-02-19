@@ -22,7 +22,7 @@ Name    Type        Result              Probability/time
 
 include("FellerKendall.jl")
 include("CustomPlotter.jl")
-using LaTeXStrings, ProgressBar
+using LaTeXStrings, ProgressBars
 
 # Define the model graph
 const nstates = 5

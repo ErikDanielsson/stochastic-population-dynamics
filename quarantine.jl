@@ -30,7 +30,7 @@ Name    Type        Result              Probability/time
 =#
 include("FellerKendall.jl")
 include("CustomPlotter.jl")
-using LaTeXStrings
+using LaTeXStrings, ProgressBars
 
 
 # Define the events by building a graph
@@ -134,7 +134,7 @@ const model = Model(nstates, graph, W)
 getX0(N, I1, I2) = State{nstates}([N - I1 - I2, I1, I2, 0, 0, 0, 0])
 
 
-function prunsim(N, I1, I2, tf, nsims::Int)
+function runsim(N, I1, I2, tf, nsims::Int)
     # Convenience function for running the simulation on several threads
     sims = Vector{Simulation{Int64}}(undef, nsims)
     Threads.@threads for i in ProgressBar(1:nsims)
