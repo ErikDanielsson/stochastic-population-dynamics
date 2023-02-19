@@ -12,7 +12,7 @@ To run the simulations clone the repo and start a Julia session in the base of
 the repo. Then run
 
 ```julia
-julia> include("<script>.jl")
+include("<script>.jl")
 ```
 where the script is either of `baseline.jl`, `quarantine.jl` or `vaccine.jl`. 
 The run the simulation for a given starting state by entering
