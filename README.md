@@ -15,7 +15,7 @@ the repo. Then run
 julia> include("<script>.jl")
 ```
 where the script is either of `baseline.jl`, `quarantine.jl` or `vaccine.jl`. 
-The run the simulation for a starting state by entering
+The run the simulation for a given starting state by entering
 ```julia
 sims = runsim(population_size, I1, I2, endtime, number_of_sims)
 ```
