@@ -3,77 +3,90 @@ Subpopulations:
 1 S: susceptible population
 2 I₁: Infected by virus 1
 3 I₂: Infected by virus 2
-4 M₁: Immune to virus 1
-5 M₂: Immune to virus 2
-6 Q₁: Quarantined with with virus 1
-7 Q₂: Quarantined with with virus 2
+4 NC₁: Non contagious virus 1
+5 NC₂: NOn contagious virus 2
+6 M₁: Immune to virus 1
+7 M₂: Immune to virus 2
+8 Q₁: Quarantined with with virus 1
+9 Q₂: Quarantined with with virus 2
+
 
 Events: 
 Name    Type        Result              Probability/time
-1       S -> E₁:    S - 1, I₁ + 1       a₁ * S * I₁ / N
-2       S -> E₂:    S - 1, I₂ + 1       a₂ * S * I₂ / N
+1       S -> I₁:    S - 1, I₁ + 1       a₁ * S * I₁ / N
+2       S -> I₂:    S - 1, I₂ + 1       a₂ * S * I₂ / N
 3       I₁ -> D:    I₁ - 1              b₁ * I₁
 4       I₂ -> D:    I₂ - 1              b₂ * I₂
-5       I₁ -> M₁:   I₁ - 1, M₁ + 1      c₁ * I₁
-6       I₂ -> M₂:   I₂ - 1, M₂ + 1      c₂ * I₂
-7       M₁ -> S:    M₁ - 1, S + 1       d₁ * M₁
-8       M₂ -> S:    M₂ - 1, S + 1       d₂ * M₂
-9       M₁ -> I₂:   M₁ - 1, I₂ + 1      e₁ * M₁ * I₂ / N
-10      M₂ -> I₁:   M₂ - 1, I₁ + 1      e₂ * M₂ * I₁ / N 
-11      I₁ -> Q₁:   I₁ - 1, Q₁ + 1      f₁ * I₁
-12      I₂ -> Q₂:   I₂ - 1, Q₂ + 1      f₂ * I₂
-13      Q₁ -> D:    Q₁ - 1              b₁ * Q₁
-14      Q₂ -> D:    Q₂ - 1              b₂ * Q₂
-15      Q₁ -> M₁:   Q₁ - 1, M₁ + 1      c₁ * Q₁
-16      Q₂ -> M₂:   Q₂ - 1, M₂ + 1      c₂ * Q₂
-
+5       I₁ -> NC₁:  I₁ - 1, NC₁ + 1     c₁ * I₁
+6       I₂ -> NC₂:  I₂ - 1, NC₂ + 1     c₂ * I₂
+7       NC₁ -> D:   NC₁ - 1             n₁ * NC₁
+8       NC2 -> D:   NC2 - 1             n₂ * NC₂
+9       NC₁ -> M1:  NC₁ - 1, M1 + 1     k₁ * NC₁
+10      NC₂ -> M2:  NC₂ - 1, M2 + 1     k2 * NC₂
+11      M₁ -> I₂:   M₁ - 1, I₂ + 1      e₁ * M₁ * I₂ / N
+12      M₂ -> I₁:   M₂ - 1, I₁ + 1      e₂ * M₂ * I₁ / N 
+13      M₁ -> S:    M₁ - 1, S + 1       d₁ * M₁
+14      M₂ -> S:    M₂ - 1, S + 1       d₂ * M₂
+15      I₁ -> Q₁:   I₁ - 1, Q₁ + 1      f₁ * I₁
+16      I₂ -> Q₂:   I₂ - 1, Q₂ + 1      f₂ * I₂
+17      Q₁ -> D:    Q₁ - 1              b₁ * Q₁
+18      Q₂ -> D:    Q₂ - 1              b₂ * Q₂
+19      Q₁ -> NC₁:  Q₁ - 1, NC₁ + 1     c₁ * Q₁
+20      Q₂ -> NC₂:  Q₂ - 1, NC₂ + 1     c₂ * Q₂
 =#
+
 include("FellerKendall.jl")
 include("CustomPlotter.jl")
 using LaTeXStrings, ProgressBars
 
-
-# Define the events by building a graph
-const nstates = 7
+const nstates = 9
 const graph = [
-    (1, 2),
-    (1, 3),
-    (2, -1),
-    (3, -1),
-    (2, 4),
-    (3, 5),
-    (4, 1),
-    (5, 1),
-    (4, 3),
-    (5, 2),
-    (2, 6),
-    (3, 7),
-    (6, -1),
-    (7, -1),
-    (6, 4),
-    (7, 5),
+    (1, 2), # 1
+    (1, 3), # 2
+    (2, -1), # 3 
+    (3, -1), # 4
+    (2, 4), # 5 
+    (3, 5), # 6
+    (4, -1), # 7
+    (5, -1), # 8
+    (4, 6), # 9
+    (5, 7), # 10
+    (6, 3), # 11
+    (7, 2), # 12
+    (6, 1), # 13
+    (7, 1), # 14
+    (2, 8), # 15
+    (3, 9), # 16
+    (8, -1), # 17
+    (9, -1), # 18
+    (8, 4), # 19
+    (9, 5), # 20
 ]
+
 
 # Define how the transition probabilities depend on the state
 getprobs(β, X, N) = @SVector [
-    β[1] * X[1] * X[2] / N, # Infection 1
-    β[2] * X[1] * X[3] / N, # Infection 2
-    β[3] * X[2], # Death 1
-    β[4] * X[3], # Death 2
-    β[5] * X[2], # Immune 1
-    β[6] * X[3], # Immune 2
-    β[7] * X[4], # Susceptible 1
-    β[8] * X[5], # Susceptible 2
-    β[9] * X[4] * X[3] / N, # Crossinfection 2
-    β[10] * X[5] * X[2] / N, # Crossinfection 1,
-    β[11] * X[2], # Quarantined 1 
-    β[12] * X[3], # Quarantined 2
-    β[3] * X[6], # Death 1
-    β[4] * X[7], # Death 2
-    β[5] * X[6], # Immune 1
-    β[6] * X[7], # Immune 2
+    β[1] * X[1] * X[2] / N, # a₁ * S * I₁ / N
+    β[2] * X[1] * X[3] / N, # a₂ * S * I₂ / N
+    β[3] * X[2], # b₁ * I₁ 
+    β[4] * X[3], # b₂ * I₂
+    β[5] * X[2], # c₁ * I₁
+    β[6] * X[3], # c₂ * I₂
+    β[7] * X[4], # n₁ * NC₁
+    β[8] * X[5], # n₂ * NC₂
+    β[9] * X[4], # k₁ * NC₁
+    β[10] * X[5], # k₂ * NC₂
+    β[11] * X[6] * X[3] / N, # e₁ * M₁ * I₂ / N
+    β[12] * X[7] * X[2] / N, # e₂ * M₂ * I₁ / N
+    β[13] * X[6], # d₁ * M₁
+    β[14] * X[7], # d₂ * M₂
+    β[15] * X[2], # f₁ * I₁
+    β[16] * X[3], # f₂ * I₂
+    β[3] * X[8], # b₁ * Q₁
+    β[4] * X[9], # b₂ * Q₂
+    β[5] * X[8], # c₁ * Q₁
+    β[6] * X[9], # c₂ * Q₂
 ]
-
 # Real parameters
 
 const totinter = 16 # Total number of interactions per day
@@ -105,14 +118,20 @@ const a2 = (totinter - phouse + 1) * sickcareful * sar_out_o + (phouse - 1) * sa
 const b1 = deadly_d / sick_day_d
 const b2 = deadly_o / sick_day_o
 
-const c1 = (1 - deadly_d) / cont_day_d
-const c2 = (1 - deadly_o) / cont_day_o
+const c1 = (1 - b1 * cont_day_d) / cont_day_d
+const c2 = (1 - b2 * cont_day_o) / cont_day_o
 
 const d1 = 1 / meananti_d
 const d2 = 1 / meananti_o
 
 const e1 = (1 - cross_protection_d) * a1
 const e2 = (1 - cross_protection_o) * a2
+
+const n1 = b1
+const n2 = b2
+
+const k1 = (1 - n1 * (sick_day_d - cont_day_d)) / (sick_day_d - cont_day_d)
+const k2 = (1 - n2 * (sick_day_d - cont_day_d)) / (sick_day_d - cont_day_d)
 
 const f1 = 0.8 / sick_day_d
 const f2 = 0.8 / sick_day_o
@@ -121,17 +140,22 @@ const β = [
     a1, a2,
     b1, b2,
     c1, c2,
-    d1, d2,
+    n1, n2,
+    k1, k2,
     e1, e2,
+    d1, d2,
     f1, f2,
+    b1, b2,
+    c1, c2,
 ]
+
 
 # Define the transition function after the parameters have been defined
 W(X::State, N::Int) = getprobs(β, X, N)
 const model = Model(nstates, graph, W)
 
 # Now we can define a problem instance
-getX0(N, I1, I2) = State{nstates}([N - I1 - I2, I1, I2, 0, 0, 0, 0])
+getX0(N, I1, I2) = State{nstates}([N - I1 - I2, I1, I2, 0, 0, 0, 0, 0, 0])
 
 
 function runsim(N, I1, I2, tf, nsims::Int)
@@ -144,7 +168,7 @@ function runsim(N, I1, I2, tf, nsims::Int)
 end
 
 # Define the plotting functions for the problem instance
-const labels = [L"S" L"D" L"I_1" L"I_2" L"M_1" L"M_2" L"Q_1" L"Q_2"]
+const labels = [L"S" L"D" L"I_1" L"I_2" L"NC_1" L"NC_2" L"M_1" L"M_2" L"Q_1" L"Q_2"]
 bandplot(sims::Vector, nsamples) = bandplot(sims, nsamples, nstates, labels)
 plotter(sim::Simulation, inc) = plotter(sim, inc, nstates, labels)
 plotter!(sim::Simulation, inc) = plotter!(sim, inc, nstates, labels)
