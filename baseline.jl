@@ -4,7 +4,7 @@ Subpopulations:
 2 I₁: Infected by virus 1
 3 I₂: Infected by virus 2
 4 NC₁: Non contagious virus 1
-5 NC₂: NOn contagious virus 2
+5 NC₂: Non contagious virus 2
 6 M₁: Immune to virus 1
 7 M₂: Immune to virus 2
 
@@ -88,7 +88,7 @@ const meananti_d = 12 * 30 # Average length of antibody protection
 const meananti_o = 4 * 30 # Average length of antibody protection
 
 const cross_protection_d = 0.3 # Reduction in the likelihood of omicron infection with delta antibodies
-const cross_protection_o = 0.277 # Reduction in the likelihood of delta infection with omicron antibodies
+const cross_protection_o = 0.0 # Reduction in the likelihood of delta infection with omicron antibodies
 
 # Transition parameters
 
@@ -104,16 +104,14 @@ const c2 = (1 - b2 * cont_day_o) / cont_day_o
 const d1 = 1 / meananti_d
 const d2 = 1 / meananti_o
 
-const e1 = (1 - cross_protection_d) * a1
-const e2 = (1 - cross_protection_o) * a2
+const e1 = (1 - cross_protection_d) * a2
+const e2 = (1 - cross_protection_o) * a1
 
 const n1 = b1
 const n2 = b2
 
 const k1 = (1 - n1 * (sick_day_d - cont_day_d)) / (sick_day_d - cont_day_d)
 const k2 = (1 - n2 * (sick_day_d - cont_day_d)) / (sick_day_d - cont_day_d)
-
-
 
 const β = [
     a1, a2,

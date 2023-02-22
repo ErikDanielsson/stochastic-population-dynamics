@@ -1,8 +1,11 @@
 using Distributions, Plots, ProgressBars
 
-function baseplotter(plotfunc, sim::Simulation, inc::Int, nstates, labels)
-    plotfunc(sim.t[1:inc:end],
-        sim.states'[1:inc:end, :],
+function baseplotter(plotfunc, sim::Simulation, nsamples::Int, nstates, labels)
+    tmax = sim.t[end]
+    tdist = tmax / (nsamples - 1)
+    tgrid, sampstates = uniformsample(sim, tdist, nsamples, sim.nstates)
+    plotfunc(tgrid,
+        sampstates',
         layout=(ceil(Int64, (nstates + 1) / 2), 2),
         title=labels,
         legend=false,

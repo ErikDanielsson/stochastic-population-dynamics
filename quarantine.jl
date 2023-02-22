@@ -31,8 +31,8 @@ Name    Type        Result              Probability/time
 16      I₂ -> Q₂:   I₂ - 1, Q₂ + 1      f₂ * I₂
 17      Q₁ -> D:    Q₁ - 1              b₁ * Q₁
 18      Q₂ -> D:    Q₂ - 1              b₂ * Q₂
-19      Q₁ -> NC₁:  Q₁ - 1, NC₁ + 1     c₁ * Q₁
-20      Q₂ -> NC₂:  Q₂ - 1, NC₂ + 1     c₂ * Q₂
+19      Q₁ -> NC₁:  Q₁ - 1, NC₁ + 1     x₁ * Q₁
+20      Q₂ -> NC₂:  Q₂ - 1, NC₂ + 1     x₂ * Q₂
 =#
 
 include("FellerKendall.jl")
@@ -82,10 +82,10 @@ getprobs(β, X, N) = @SVector [
     β[14] * X[7], # d₂ * M₂
     β[15] * X[2], # f₁ * I₁
     β[16] * X[3], # f₂ * I₂
-    β[3] * X[8], # b₁ * Q₁
-    β[4] * X[9], # b₂ * Q₂
-    β[5] * X[8], # c₁ * Q₁
-    β[6] * X[9], # c₂ * Q₂
+    β[17] * X[8], # b₁ * Q₁
+    β[18] * X[9], # b₂ * Q₂
+    β[19] * X[8], # x₁ * Q₁
+    β[20] * X[9], # x₂ * Q₂
 ]
 # Real parameters
 
@@ -108,7 +108,10 @@ const meananti_d = 12 * 30 # Average length of antibody protection
 const meananti_o = 4 * 30 # Average length of antibody protection
 
 const cross_protection_d = 0.3 # Reduction in the likelihood of omicron infection with delta antibodies
-const cross_protection_o = 0.277 # Reduction in the likelihood of delta infection with omicron antibodies
+const cross_protection_o = 0.0 # Reduction in the likelihood of delta infection with omicron antibodies
+
+const quarantine_param_d = 3.89
+const quarantine_param_o = 3.34
 
 # Transition parameters
 
@@ -124,8 +127,8 @@ const c2 = (1 - b2 * cont_day_o) / cont_day_o
 const d1 = 1 / meananti_d
 const d2 = 1 / meananti_o
 
-const e1 = (1 - cross_protection_d) * a1
-const e2 = (1 - cross_protection_o) * a2
+const e1 = (1 - cross_protection_d) * a2
+const e2 = (1 - cross_protection_o) * a1
 
 const n1 = b1
 const n2 = b2
@@ -135,6 +138,9 @@ const k2 = (1 - n2 * (sick_day_d - cont_day_d)) / (sick_day_d - cont_day_d)
 
 const f1 = 0.8 / sick_day_d
 const f2 = 0.8 / sick_day_o
+
+const x1 = (1 - b1 * (cont_day_d - quarantine_param_d)) / (cont_day_d - quarantine_param_d)
+const x2 = (1 - b2 * (cont_day_o - quarantine_param_o)) / (cont_day_o - quarantine_param_o)
 
 const β = [
     a1, a2,
@@ -146,7 +152,7 @@ const β = [
     d1, d2,
     f1, f2,
     b1, b2,
-    c1, c2,
+    x1, x2,
 ]
 
 

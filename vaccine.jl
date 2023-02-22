@@ -91,7 +91,7 @@ const meananti_d = 12 * 30 # Average length of antibody protection
 const meananti_o = 4 * 30 # Average length of antibody protection
 
 const cross_protection_d = 0.3 # Reduction in the likelihood of omicron infection with delta antibodies
-const cross_protection_o = 0.277 # Reduction in the likelihood of delta infection with omicron antibodies
+const cross_protection_o = 0.0 # Reduction in the likelihood of delta infection with omicron antibodies
 
 # Transition parameters
 
@@ -107,8 +107,8 @@ const c2 = (1 - deadly_o) / cont_day_o
 const d1 = 1 / meananti_d
 const d2 = 1 / meananti_o
 
-const e1 = (1 - cross_protection_d) * a1
-const e2 = (1 - cross_protection_o) * a2
+const e1 = (1 - cross_protection_d) * a2
+const e2 = (1 - cross_protection_o) * a1
 
 const n1 = b1
 const n2 = b2
