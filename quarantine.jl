@@ -110,8 +110,8 @@ const meananti_o = 4 * 30 # Average length of antibody protection
 const cross_protection_d = 0.3 # Reduction in the likelihood of omicron infection with delta antibodies
 const cross_protection_o = 0.0 # Reduction in the likelihood of delta infection with omicron antibodies
 
-const quarantine_param_d = 3.89
-const quarantine_param_o = 3.34
+const days_til_quarantine_d = 0.99 * cont_day_d
+const days_til_quarantine_o = 0.99 * cont_day_o
 
 # Transition parameters
 
@@ -121,8 +121,8 @@ const a2 = (totinter - phouse + 1) * sickcareful * sar_out_o + (phouse - 1) * sa
 const b1 = deadly_d / sick_day_d
 const b2 = deadly_o / sick_day_o
 
-const c1 = (1 - b1 * cont_day_d) / cont_day_d
-const c2 = (1 - b2 * cont_day_o) / cont_day_o
+const c1 = 1 / cont_day_d
+const c2 = 1 / cont_day_o
 
 const d1 = 1 / meananti_d
 const d2 = 1 / meananti_o
@@ -133,14 +133,14 @@ const e2 = (1 - cross_protection_o) * a1
 const n1 = b1
 const n2 = b2
 
-const k1 = (1 - n1 * (sick_day_d - cont_day_d)) / (sick_day_d - cont_day_d)
-const k2 = (1 - n2 * (sick_day_d - cont_day_d)) / (sick_day_d - cont_day_d)
+const k1 = 1 / (sick_day_d - cont_day_d)
+const k2 = 1 / (sick_day_o - cont_day_o)
 
-const f1 = 0.8 / sick_day_d
-const f2 = 0.8 / sick_day_o
+const f1 = 1 / days_til_quarantine_d
+const f2 = 1 / days_til_quarantine_o
 
-const x1 = (1 - b1 * (cont_day_d - quarantine_param_d)) / (cont_day_d - quarantine_param_d)
-const x2 = (1 - b2 * (cont_day_o - quarantine_param_o)) / (cont_day_o - quarantine_param_o)
+const x1 = 1 / (cont_day_d - days_til_quarantine_d)
+const x2 = 1 / (cont_day_o - days_til_quarantine_o)
 
 const β = [
     a1, a2,

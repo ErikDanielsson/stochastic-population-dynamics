@@ -27,6 +27,6 @@ bandplot(sims, number_of_samples)
 ```
 and to plot the evolution of all simulated states run
 ```julia
-plotter(sims, step_between_samples)
+plotter(sims, number_of_samples)
 ```
 

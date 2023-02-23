@@ -98,8 +98,8 @@ const a2 = (totinter - phouse + 1) * sickcareful * sar_out_o + (phouse - 1) * sa
 const b1 = deadly_d / sick_day_d
 const b2 = deadly_o / sick_day_o
 
-const c1 = (1 - b1 * cont_day_d) / cont_day_d
-const c2 = (1 - b2 * cont_day_o) / cont_day_o
+const c1 = 1 / cont_day_d
+const c2 = 1 / cont_day_o
 
 const d1 = 1 / meananti_d
 const d2 = 1 / meananti_o
@@ -110,8 +110,8 @@ const e2 = (1 - cross_protection_o) * a1
 const n1 = b1
 const n2 = b2
 
-const k1 = (1 - n1 * (sick_day_d - cont_day_d)) / (sick_day_d - cont_day_d)
-const k2 = (1 - n2 * (sick_day_d - cont_day_d)) / (sick_day_d - cont_day_d)
+const k1 = 1 / (sick_day_d - cont_day_d)
+const k2 = 1 / (sick_day_d - cont_day_d)
 
 const β = [
     a1, a2,
